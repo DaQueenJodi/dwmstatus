@@ -157,7 +157,19 @@ sigaction(SIGTERM, &act, NULL);
   pthread_join(thread_handle, NULL);
 }
 
-int main(void) {
+int main(int argc, char **argv) {
+  for (int i = 1; i < argc; i++) {
+    if (strcmp(argv[i], "test") == 0) {
+      for (size_t i = 0; i < MODULESLEN; i++) {
+        fprintf(stderr, "running command `%s`...\n", modules[i].command);
+        if (system(modules[i].command) != 0) {
+          fprintf(stderr, "test failed on module %zu!", i + 1);
+          return 1;
+        }
+      }
+      return 0;
+    }
+  }
   // might be able to do this on compile time
   // but it only matters on start up so this is okay
   for (size_t i = 0; i < MODULESLEN; i++) {
